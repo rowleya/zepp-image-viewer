@@ -1,58 +1,69 @@
-import { BaseSideService } from "@zeppos/zml/base-side";
+import { BaseSideService } from '@zeppos/zml/base-side'
+import { settingsLib } from '@zeppos/zml/base-side'
+import { convertLib } from '@zeppos/zml/base-side'
 
-async function fetchImageList() {
-  try {
-    // Requesting network data using the fetch API
-    // The sample program is for simulation only and does not request real network data, so it is commented here
-    // Example of a GET method request
-    // const { body: { data = {} } = {} } = await fetch({
-    //   url: 'https://xxx.com/api/xxx',
-    //   method: 'GET'
-    // })
-    // Example of a POST method request
-    // const { body: { data = {} } = {} } = await fetch({
-    //   url: 'https://xxx.com/api/xxx',
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify({
-    //     text: 'Hello Zepp OS'
-    //   })
-    // })
+import { DEFAULT_TODO_LIST } from './../utils/constants'
 
-    // A network request is simulated here, Reference documentation: https://jsonplaceholder.typicode.com/
-    const response = await fetch({
-      url: 'http://localhost:5000/',
-      method: 'GET'
-    });
-	console.log("Response body" + response.body);
-
-    return response.body;
-  } catch (error) {
-	return "ERROR";
-  }
+async function getImageList(res) {
+  response = await fetch({
+    url: 'http://localhost:5000/',
+    method: 'GET'
+  });
+  res(null, {
+	result: response.body
+  })
 }
 
-function getTodoList() {
-  return [['Learn']]
+async function serve(filePath, res, this_ptr) {
+  console.log("Downloading " + filePath);
+  const dl_url = encodeURI('http://localhost:5000/' + filePath);
+  const dl_task = network.downloader.downloadFile({
+    url: dl_url,
+    headers: {},
+    timeout: 60000
+  })
+
+  dl_task.onProgress = (ev) => {
+    console.log(ev.progress)
+    console.log(ev.total)
+    console.log(ev.loaded)
+  }
+
+  dl_task.onSuccess = (event) => {
+    console.log("File download complete")
+    console.log(event.filePath) // data://download/1.png
+    console.log(event.tempFilePath) // undefined
+    console.log(event.statusCode) // 200
+  }
+  dl_task.onFail = (event) => {
+    console.log("File download error")
+    console.log(event.code)
+    console.log(event.message)
+  }
+  /*console.log("Download result=>" + dl_result);
+  const conv_result = await convertLib.convert({
+    filePath: filePath,
+    targetFilePath: filePath,
+  });
+
+  console.log("ConvertImage result=>%j", conv_result);
+  res(null, {
+    result: "success"
+  })
+  this_ptr.sendFile(filePath, { type: "png", name: filePath }); */
 }
 
 AppSideService(
   BaseSideService({
     onInit() {},
-
     onRequest(req, res) {
-      console.log("=====>,", req.method);
-      if (req.method === "GET_IMAGE_LIST") {
-		res(null, {
-          result: getTodoList()
-        })
+      if (req.method === 'GET_IMAGE_LIST') {
+        getImageList(res)
+      } else if (req.method === 'GET_IMAGE') {
+        serve(req.params, res, this)
       }
     },
-
     onRun() {},
-
-    onDestroy() {},
+    onDestroy() {}
   })
-);
+)

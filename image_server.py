@@ -13,6 +13,7 @@ def list_files():
 
 @app.route("/<string:filename>")
 def get_file(filename):
+    print("Reading ", filename);
     with open(f"{file_path}/{filename}", 'rb') as f:
         data = f.read()
     return Response(data, content_type="application/octet-stream")

@@ -1,21 +1,17 @@
 {
   "configVersion": "v3",
   "app": {
-    "appId": 26392,
-    "appName": "Fetch API",
     "appType": "app",
     "version": {
       "code": 1,
-      "name": "1.0.1"
+      "name": "1.0.0"
     },
-    "icon": "icon.png",
-    "vender": "zepp",
-    "description": "A sample application to demonstrate the fetch API"
+    "appId": 28426,
+    "appName": "Image Viewer",
+    "icon": "pictures.png",
+    "vender": "me",
+    "description": "Viewer of images on a local web server"
   },
-  "permissions": [
-    "data:os.device.info",
-    "device:os.local_storage"
-  ],
   "runtime": {
     "apiVersion": {
       "compatible": "3.0.0",
@@ -24,15 +20,18 @@
     }
   },
   "targets": {
-    "common": {
+    "gt": {
       "module": {
         "page": {
           "pages": [
-            "page/index"
+            "page/home/index.page"
           ]
         },
         "app-side": {
           "path": "app-side/index"
+        },
+        "setting": {
+          "path": "setting/index"
         }
       },
       "platforms": [
@@ -47,10 +46,16 @@
       ]
     }
   },
+  "permissions": [
+    "data:os.device.info",
+    "device:os.local_storage",
+    "device:os.ble"
+  ],
   "i18n": {
     "en-US": {
-      "appName": "Fetch API"
+      "name": "Todo List"
     }
   },
-  "defaultLanguage": "en-US"
+  "defaultLanguage": "en-US",
+  "debug": false
 }
